@@ -1,0 +1,12 @@
+server:
+  port: 33000
+spring:
+  application:
+    name: iotuser
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/dc3?SSL=false&sslMode=DISABLED
+    username: root
+    password: root
+  profiles:
+    active:
+      - register
