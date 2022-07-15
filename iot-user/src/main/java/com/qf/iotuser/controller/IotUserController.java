@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 /**
  * @author Administrator
  * @version V1.0
@@ -29,9 +31,18 @@ public class IotUserController {
     public Mono<R<Object>> addUser(@RequestBody Mono<Dc3User> userMono){
         return userService.addUser(userMono);
     }
-
     @GetMapping("/info/{id}")
     public Mono<R> findById(@PathVariable String id){
-        return userService.findById(id);
+        return userService.findById(id).map(dc3User -> R.ok(dc3User));
+    }
+
+//    @GetMapping("/info/{id}")
+//    public Mono<ArrayList<Dc3User>> findById(@PathVariable String id){
+//        return userService.findById(id);
+//    }
+
+    @PostMapping("/list")
+    public Mono<R> findByIdIn(@RequestBody List<String> ids){
+        return userService.findByIdIn(ids).collectList().map(list->R.ok(list));
     }
 }

@@ -12,6 +12,7 @@
         <module>iot-cache</module>
         <module>iot-tenant</module>
         <module>iot-user</module>
+        <module>iot-api</module>
     </modules>
 
     <parent>

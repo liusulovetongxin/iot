@@ -17,11 +17,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>com.dc3</groupId>
-            <artifactId>dc3-common-profiles</artifactId>
-            <version>2022.1.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.dc3</groupId>-->
+<!--            <artifactId>dc3-common-profiles</artifactId>-->
+<!--            <version>2022.1.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.dc3</groupId>
             <artifactId>dc3-common-base</artifactId>
@@ -44,6 +44,10 @@
             <artifactId>spring-boot-starter-data-r2dbc</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

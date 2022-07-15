@@ -2,7 +2,10 @@ package com.qf.iotuser.service;
 
 import com.dc3.common.bean.R;
 import com.qf.iotuser.pojo.Dc3User;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * @author Administrator
@@ -16,5 +19,9 @@ import reactor.core.publisher.Mono;
 public interface IotUserService {
     Mono<R<Object>> addUser(Mono<Dc3User> userMono);
 
-    Mono<R> findById(String id);
+    Mono<Dc3User> findById(String id);
+
+    Flux<Dc3User> findByIdIn(List<String> ids);
+
+    Mono<Void> updateUser(Mono<Dc3User> userMono);
 }

@@ -15,7 +15,7 @@ import reactivefeign.spring.config.EnableReactiveFeignClients;
  */
 @SpringBootApplication
 @EnableTransactionManagement
-@EnableReactiveFeignClients
+@EnableReactiveFeignClients(basePackages = "com.qf")
 public class IotTenantStartApp {
     public static void main(String[] args){
         SpringApplication.run(IotTenantStartApp.class,args);

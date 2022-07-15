@@ -23,6 +23,9 @@ public interface TenantService {
     Flux<Dc3Tenant> findByName(String name);
 
     Mono<R<Object>> update(Mono<Dc3Tenant> tenantMono);
+    Mono<R<Object>> updateDc3Tenant(Mono<Dc3Tenant> tenantMono);
 
     Mono<R<Object>> bindTenant2User(Mono<Dc3TenantBind> tenantBindMono);
+
+    Mono<Dc3Tenant> findByUsers(String tenantId);
 }

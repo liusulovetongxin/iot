@@ -32,21 +32,28 @@ public class IotTenantController {
     }
     @GetMapping("/info/{id}")
     public Mono<R<Dc3Tenant>> findById(@PathVariable String id){
+//        tenantService.findById(id).subscribe(value-> System.err.println(value));
         return tenantService.findById(id).map(dc3Tenant -> R.ok(dc3Tenant)).defaultIfEmpty(R.fail("没有查询到数据"));
     }
 
     @GetMapping("/list/{name}")
     public Mono<R> findByName(@PathVariable String name){
-        return tenantService.findByName(name).collectList().map(dc3Tenants -> R.ok(dc3Tenants));
+        Mono<R> map = tenantService.findByName(name).collectList().map(dc3Tenants -> R.ok(dc3Tenants));
+        System.err.println("wwww");
+        return map;
     }
 
     @PostMapping("/update")
     public Mono<R<Object>> updateTenant(@RequestBody Mono<Dc3Tenant> tenantMono){
-        return tenantService.update(tenantMono);
+        return tenantService.updateDc3Tenant(tenantMono);
     }
 
     @PostMapping("/bind")
     public Mono<R<Object>> bindTenant2User(@RequestBody Mono<Dc3TenantBind> tenantBindMono){
         return tenantService.bindTenant2User(tenantBindMono);
+    }
+    @GetMapping("/findusers/{tenantId}")
+    public Mono<R> findByIdIn(@PathVariable String tenantId){
+        return tenantService.findByUsers(tenantId).map(res->R.ok(res));
     }
 }
