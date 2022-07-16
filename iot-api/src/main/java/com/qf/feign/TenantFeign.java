@@ -3,12 +3,8 @@ package com.qf.feign;
 import com.dc3.common.bean.R;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import reactivefeign.spring.config.ReactiveFeignClient;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 /**
  * @author Administrator
@@ -16,14 +12,14 @@ import java.util.List;
  * @Project iot
  * @Package com.qf.feign
  * @Description:
- * @Date 2022/7/15 19:31
+ * @Date 2022/7/16 14:48
  */
-@ReactiveFeignClient(value = "iot-user")
-public interface UserFeign {
+@ReactiveFeignClient(value = "iot-tenant")
+public interface TenantFeign {
 
-    @GetMapping("/user/info/{id}")
+    @GetMapping("/tenant/info/{id}")
     Mono<R> findById(@PathVariable String id);
 
-    @PostMapping("/user/list")
-    Mono<R> findByIdIn(@RequestBody List<String> ids);
+    @GetMapping("/tenant/findusers/{tenantId}")
+    Mono<R> findByIdIn(@PathVariable String tenantId);
 }

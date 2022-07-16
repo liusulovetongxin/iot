@@ -24,4 +24,5 @@ public class Dc3User {
   private LocalDateTime updateTime;
   private Long deleted;
 
+  private Dc3Tenant dc3Tenant;
 }

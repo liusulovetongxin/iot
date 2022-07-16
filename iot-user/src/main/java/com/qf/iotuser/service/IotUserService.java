@@ -23,5 +23,11 @@ public interface IotUserService {
 
     Flux<Dc3User> findByIdIn(List<String> ids);
 
-    Mono<Void> updateUser(Mono<Dc3User> userMono);
+    Mono<R<Object>> updateUser(Mono<Dc3User> userMono);
+
+    Mono<R<Object>> deleteById(String id);
+
+    Mono<Dc3User> findUserAndTent(Mono<Dc3User> userMono);
+
+    Mono<R<Object>> loginByTenant(String tenantId, Mono<Dc3User> userMono);
 }

@@ -31,9 +31,9 @@ public class IotTenantController {
         return tenantService.addTenant(tenantMono);
     }
     @GetMapping("/info/{id}")
-    public Mono<R<Dc3Tenant>> findById(@PathVariable String id){
+    public Mono<R> findById(@PathVariable String id){
 //        tenantService.findById(id).subscribe(value-> System.err.println(value));
-        return tenantService.findById(id).map(dc3Tenant -> R.ok(dc3Tenant)).defaultIfEmpty(R.fail("没有查询到数据"));
+        return tenantService.findById(id).map(dc3Tenant -> R.ok(dc3Tenant));
     }
 
     @GetMapping("/list/{name}")

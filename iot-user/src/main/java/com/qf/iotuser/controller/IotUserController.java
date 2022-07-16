@@ -45,4 +45,22 @@ public class IotUserController {
     public Mono<R> findByIdIn(@RequestBody List<String> ids){
         return userService.findByIdIn(ids).collectList().map(list->R.ok(list));
     }
+
+    @PostMapping("/update")
+    public Mono<R<Object>> updateDc3User(@RequestBody Mono<Dc3User> dc3UserMono){
+        return userService.updateUser(dc3UserMono);
+    }
+    @DeleteMapping("/{id}")
+    public Mono<R<Object>> deleteDc3User(@PathVariable String id){
+        return userService.deleteById(id);
+    }
+    @PostMapping ("/tenant")
+    public Mono<R<Object>> findUserAndTenant(@RequestBody Mono<Dc3User> userMono){
+        return userService.findUserAndTent(userMono).map(result->R.ok(result));
+    }
+
+    @PostMapping("/login")
+    public Mono<R<Object>> loginByTenant(String tenantId, @RequestBody Mono<Dc3User> userMono){
+        return userService.loginByTenant(tenantId,userMono);
+    }
 }

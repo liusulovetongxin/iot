@@ -11,18 +11,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Dc3User {
+public class Dc3TenantBind {
 
   private String id;
-  private String name;
-  private String phone;
-  private String email;
-  private String password;
-  private Long enable;
+  private String tenantId;
+  private String userId;
   private String description;
   private LocalDateTime createTime;
   private LocalDateTime updateTime;
   private Long deleted;
 
-  private Dc3Tenant dc3Tenant;
+
+
+
 }
