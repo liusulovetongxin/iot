@@ -2,7 +2,7 @@ server:
   port: 22000
 spring:
   application:
-    name: iot-tenant
+    name: zck-iot-tenant
   r2dbc:
     url: r2dbc:mysql://localhost:3306/dc3?SSL=false&sslMode=DISABLED
     username: root
@@ -10,4 +10,4 @@ spring:
   profiles:
     active:
       - register
-Dc3User: iotuser
+

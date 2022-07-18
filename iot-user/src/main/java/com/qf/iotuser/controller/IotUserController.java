@@ -28,8 +28,8 @@ public class IotUserController {
     }
 
     @PostMapping("/add")
-    public Mono<R<Object>> addUser(@RequestBody Mono<Dc3User> userMono){
-        return userService.addUser(userMono);
+    public Mono<R<Object>> addUser(@RequestParam("tenantId")String tenantId,@RequestBody Mono<Dc3User> userMono){
+        return userService.addUser(tenantId,userMono);
     }
     @GetMapping("/info/{id}")
     public Mono<R> findById(@PathVariable String id){

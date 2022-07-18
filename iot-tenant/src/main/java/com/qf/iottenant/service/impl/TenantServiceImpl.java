@@ -45,27 +45,16 @@ public class TenantServiceImpl implements TenantService {
     public void setR2dbcEntityTemplate(R2dbcEntityTemplate r2dbcEntityTemplate) {
         this.r2dbcEntityTemplate = r2dbcEntityTemplate;
     }
-
-
-
     @Override
     public Mono<R<Object>> addTenant(Mono<Dc3Tenant> tenantMono) {
         return tenantMono
-                .filter(dc3Tenant -> StringUtils.hasText(dc3Tenant.getName()) && StringUtils.hasText(dc3Tenant.getDescription()))
-                .doOnNext(dc3Tenant ->
-                        dc3Tenant.setId(UUID.randomUUID().toString(true)))
-                .map(dc3Tenant -> {
-                    r2dbcEntityTemplate.insert(Dc3Tenant.class).into("dc3_tenant").using(dc3Tenant)
-//                                    .doOnError(e -> R.fail("添加失败" + e.getMessage()))
-//                                    .doOnSuccess(result -> R.ok("添加成功"));
-                            .subscribe();
-                    return R.ok("添加成功");
-                        }
-                ).defaultIfEmpty(R.fail("添加失败"))
-                .doOnError(System.err::println);
+                .filter(tenant -> StringUtils.hasText(tenant.getName()) )
+                .doOnNext(tenant -> {
+                    tenant.setId(UUID.randomUUID().toString(true));
+                })
+                .flatMap(tenant -> r2dbcEntityTemplate.insert(Dc3Tenant.class).into("dc3_tenant").using(tenant).map(result -> R.ok())
+                ).defaultIfEmpty(R.fail("数据不能为空"));
     }
-
-
     @Override
     public Mono<Dc3Tenant> findById(String id) {
 //        List<Dc3User> dc3Users = new ArrayList<>();
@@ -163,6 +152,14 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
+    public Mono<R<Object>> bindTenant2User(Dc3TenantBind tenantBindMono) {
+        tenantBindMono.setId(UUID.randomUUID().toString(true));
+        return r2dbcEntityTemplate.insert(Dc3TenantBind.class)
+                .into("dc3_tenant_bind")
+                .using(tenantBindMono)
+                .map(dc3TenantBind -> R.ok(dc3TenantBind));
+    }
+    @Override
     public Mono<Dc3Tenant> findByUsers(String tenantId) {
         return findById(tenantId).flatMap(dc3Tenant ->
                 r2dbcEntityTemplate
@@ -181,6 +178,19 @@ public class TenantServiceImpl implements TenantService {
                         )
 
                 );
+    }
+
+    @Override
+    public Mono<Integer> findCount(String tenantId, List<String> ids) {
+
+        return r2dbcEntityTemplate.select(Dc3TenantBind.class)
+                .from("dc3_tenant_bind")
+                .matching(Query.query(Criteria.where("tenant_id").is(tenantId).and(Criteria.where("user_id").in(ids))
+                        )).all()
+                .collectList()
+                .map(list->list.size());
+//        下面有问题，这个count函数可能有大问题，cannot map * 我靠
+//        return r2dbcEntityTemplate.count(Query.query(Criteria.where("tenant_id").is(tenantId).and(Criteria.where("user_id").in(ids))), Dc3TenantBind.class);
     }
 
 

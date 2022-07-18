@@ -9,6 +9,7 @@ import com.qf.iotuser.pojo.Dc3TenantBind;
 import com.qf.iotuser.pojo.Dc3User;
 import com.qf.iotuser.service.IotUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
@@ -35,6 +36,13 @@ import java.util.List;
 @Service
 @Transactional
 public class IotUserServiceImpl implements IotUserService {
+    private ApplicationContext context;
+
+    @Autowired
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
+
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -82,6 +90,48 @@ public class IotUserServiceImpl implements IotUserService {
                                 })
                 ).defaultIfEmpty(R.fail("数据传递不完整"));
     }
+    @Override
+    public Mono<R<Object>> addUser(String tenantId,Mono<Dc3User> userMono) {
+        return userMono.filter(dc3User -> StringUtils.hasText(dc3User.getName())
+                // 首先判断是否传递了必要的数据
+                        && StringUtils.hasText(dc3User.getPassword())
+                        || StringUtils.hasText(dc3User.getDescription())
+                        || StringUtils.hasText(dc3User.getPhone())
+                        || StringUtils.hasText(dc3User.getEmail()))
+                .flatMap(dc3User -> {
+                    // 这里判断是否租户下面已经有这个用户的数据了
+                    // 本来的思路是通过租户id查到租户下面的所有的用户id，然后取出名字来判断，但是效率可能很低，所以另一个办法
+                    // 通过用户名字，找到这个表中所有的用户，如果当前表没有的话，当然是可以直接添加的，如果有了，再查bind表，如果没有关联关系就可一插入
+                    return findUserId(dc3User.getName())
+                            .flatMap(ids->
+                                tenantFeign.findCount(tenantId,ids)
+                                        .filter(r -> (Integer) r.getData()==0)
+                                        .map(r->dc3User)
+                            );
+                })
+                .map(dc3User -> {
+                    //
+                    dc3User.setId(UUID.randomUUID().toString(true));
+                    dc3User.setPassword(bCryptPasswordEncoder.encode(dc3User.getPassword()));
+                    return dc3User;
+                }).flatMap(dc3User ->
+                        r2dbcEntityTemplate.insert(Dc3User.class)
+                                .into("dc3_user")
+                                .using(dc3User)
+                )
+                .map(dc3User ->
+                        {
+                            HashMap hashMap = new HashMap();
+                            hashMap.put("tenantId", tenantId);
+                            hashMap.put("userId", dc3User.getId());
+                            hashMap.put("description", "普通用户");
+                            tenantFeign.bindTenant2User(hashMap).subscribe();
+                            return dc3User;
+                        }
+                        )
+                .map(dc3User->R.ok("添加成功"))
+                        .defaultIfEmpty(R.fail("数据传递不完整"));
+    }
 
 
     @Override
@@ -93,7 +143,6 @@ public class IotUserServiceImpl implements IotUserService {
 //                    return dc3Users;
 //                });
 //        return mono;
-
         return r2dbcEntityTemplate.selectOne(Query.query(Criteria.where("id").is(id)), Dc3User.class);
     }
 
@@ -174,6 +223,17 @@ public class IotUserServiceImpl implements IotUserService {
                             return bCryptPasswordEncoder.matches(dc3User.getPassword(),objectMapper.convertValue(list.get(0),Dc3User.class).getPassword()) ? R.ok("登录成功") : R.fail("登录失败");
                         })
                 ).defaultIfEmpty(R.fail("用户名或密码错误"));
+    }
+
+    @Override
+    public Flux<Dc3User> findByName(String name) {
+        return r2dbcEntityTemplate.select(Dc3User.class).from("dc3_user")
+                .matching(Query.query(Criteria.where("name").is(name))).all();
+    }
+
+    @Override
+    public Mono<List<String>> findUserId(String name) {
+        return findByName(name).map(Dc3User::getId).collectList();
     }
 
 }

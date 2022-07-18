@@ -18,6 +18,7 @@ import java.util.List;
 
 public interface IotUserService {
     Mono<R<Object>> addUser(Mono<Dc3User> userMono);
+    Mono<R<Object>> addUser(String tenantId,Mono<Dc3User> userMono);
 
     Mono<Dc3User> findById(String id);
 
@@ -30,4 +31,8 @@ public interface IotUserService {
     Mono<Dc3User> findUserAndTent(Mono<Dc3User> userMono);
 
     Mono<R<Object>> loginByTenant(String tenantId, Mono<Dc3User> userMono);
+
+    Flux<Dc3User> findByName(String name);
+
+    Mono<List<String>> findUserId(String name);
 }

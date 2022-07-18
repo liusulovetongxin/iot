@@ -2,7 +2,7 @@ server:
   port: 33000
 spring:
   application:
-    name: iot-user
+    name: zck-iot-user
   r2dbc:
     url: r2dbc:mysql://localhost:3306/dc3?SSL=false&sslMode=DISABLED
     username: root

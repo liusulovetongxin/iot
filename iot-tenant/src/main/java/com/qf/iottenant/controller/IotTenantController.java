@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 /**
  * @author Administrator
  * @version V1.0
@@ -49,11 +51,16 @@ public class IotTenantController {
     }
 
     @PostMapping("/bind")
-    public Mono<R<Object>> bindTenant2User(@RequestBody Mono<Dc3TenantBind> tenantBindMono){
+    public Mono<R<Object>> bindTenant2User(@RequestBody Dc3TenantBind tenantBindMono){
         return tenantService.bindTenant2User(tenantBindMono);
     }
     @GetMapping("/findusers/{tenantId}")
     public Mono<R> findByIdIn(@PathVariable String tenantId){
         return tenantService.findByUsers(tenantId).map(res->R.ok(res));
+    }
+
+    @PostMapping("/count")
+    public Mono<R> findCount(@RequestParam("tenantId") String tenantId, @RequestBody List<String> ids){
+        return tenantService.findCount(tenantId, ids).map(count->R.ok(count));
     }
 }

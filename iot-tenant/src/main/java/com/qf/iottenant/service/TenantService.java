@@ -6,6 +6,8 @@ import com.qf.iottenant.pojo.Dc3TenantBind;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 /**
  * @author Administrator
  * @version V1.0
@@ -26,6 +28,11 @@ public interface TenantService {
     Mono<R<Object>> updateDc3Tenant(Mono<Dc3Tenant> tenantMono);
 
     Mono<R<Object>> bindTenant2User(Mono<Dc3TenantBind> tenantBindMono);
+    Mono<R<Object>> bindTenant2User(Dc3TenantBind tenantBindMono);
 
     Mono<Dc3Tenant> findByUsers(String tenantId);
+
+    Mono<Integer> findCount(String tenantId, List<String>ids);
+
+
 }

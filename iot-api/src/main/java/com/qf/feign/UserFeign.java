@@ -18,7 +18,7 @@ import java.util.List;
  * @Description:
  * @Date 2022/7/15 19:31
  */
-@ReactiveFeignClient(value = "iot-user")
+@ReactiveFeignClient(value = "zck-iot-user")
 public interface UserFeign {
 
     @GetMapping("/user/info/{id}")
