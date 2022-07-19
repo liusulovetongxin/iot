@@ -35,4 +35,7 @@ public interface IotUserService {
     Flux<Dc3User> findByName(String name);
 
     Mono<List<String>> findUserId(String name);
+
+    Mono<String> login(String userName, String password, String tenantName);
+    Mono<Dc3User> findByUserNameAndTenantName(String username,String tenantName);
 }

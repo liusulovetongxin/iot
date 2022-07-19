@@ -13,6 +13,7 @@
         <module>iot-tenant</module>
         <module>iot-user</module>
         <module>iot-api</module>
+        <module>iot-gateway</module>
     </modules>
 
     <parent>

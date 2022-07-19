@@ -1,10 +1,12 @@
 package com.qf.iotuser.controller;
 
 import com.dc3.common.bean.R;
+import com.dc3.common.constant.ServiceConstant;
 import com.qf.iotuser.pojo.Dc3User;
 import com.qf.iotuser.service.IotUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -60,7 +62,9 @@ public class IotUserController {
     }
 
     @PostMapping("/login")
-    public Mono<R<Object>> loginByTenant(String tenantId, @RequestBody Mono<Dc3User> userMono){
-        return userService.loginByTenant(tenantId,userMono);
+    public Mono<R<Object>> login(String userName, String password, String tenantName, ServerWebExchange exchange){
+        return userService.login(userName,password,tenantName).map(jwt -> {
+            exchange.getResponse().getHeaders().set(ServiceConstant.Header.X_AUTH_TOKEN, jwt);
+            return R.ok();}).defaultIfEmpty(R.fail("账号密码错误"));
     }
 }

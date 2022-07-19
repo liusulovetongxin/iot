@@ -1,8 +1,8 @@
 server:
-  port: 11111
+  port: 14000
 spring:
   application:
-    name: zck-iot-cache
+    name: zck-iot-gateway
   profiles:
     active:
       - register

@@ -2,12 +2,16 @@ package com.qf.iotuser.service.impl;
 
 import cn.hutool.core.lang.UUID;
 import com.dc3.common.bean.R;
+import com.dc3.common.constant.CacheConstant;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.qf.feign.CacheFeign;
 import com.qf.feign.TenantFeign;
 import com.qf.iotuser.pojo.Dc3Tenant;
 import com.qf.iotuser.pojo.Dc3TenantBind;
 import com.qf.iotuser.pojo.Dc3User;
 import com.qf.iotuser.service.IotUserService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -22,6 +26,9 @@ import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +43,13 @@ import java.util.List;
 @Service
 @Transactional
 public class IotUserServiceImpl implements IotUserService {
+    private CacheFeign cacheFeign;
+
+    @Autowired
+    public void setCacheFeign(CacheFeign cacheFeign) {
+        this.cacheFeign = cacheFeign;
+    }
+
     private ApplicationContext context;
 
     @Autowired
@@ -234,6 +248,36 @@ public class IotUserServiceImpl implements IotUserService {
     @Override
     public Mono<List<String>> findUserId(String name) {
         return findByName(name).map(Dc3User::getId).collectList();
+    }
+
+
+    @Override
+    public Mono<String> login(String userName, String password, String tenantName) {
+        return findByUserNameAndTenantName(userName, tenantName)
+                .filter(dc3User -> bCryptPasswordEncoder.matches(password,dc3User.getPassword()))
+                .map(dc3User -> {
+                    String salt = UUID.randomUUID().toString(true);
+                    String key = "zck"+CacheConstant.Entity.TENANT+tenantName+CacheConstant.Entity.USER+userName+CacheConstant.Suffix.SALT;
+                    cacheFeign.set(key,salt).subscribe();
+                    Instant instant = Instant.now();
+                    Instant seconds = instant.plusSeconds(2 * 60);
+                    String jwt = Jwts.builder()
+                            .setSubject(userName)
+                            .claim("tenantName", tenantName)
+                            .claim("phone", dc3User.getPhone())
+                            .claim("email", dc3User.getEmail())
+                            .claim("description", dc3User.getDescription())
+                            .setExpiration(Date.from(seconds)) // 设置过期时间
+//                            .setNotBefore(Date.from(seconds)) 设置什么时间之前不可用
+                            .setIssuedAt(Date.from(instant))// 设置什么时候开始
+                            .signWith(SignatureAlgorithm.HS256, salt.getBytes(StandardCharsets.UTF_8))
+                            .compact();
+                    return jwt;
+                });
+    }
+    @Override
+    public Mono<Dc3User> findByUserNameAndTenantName(String username, String tenantName) {
+        return r2dbcEntityTemplate.selectOne(Query.query(Criteria.where("name").is(username).and(Criteria.where("tenant_name").is(tenantName))), Dc3User.class);
     }
 
 }

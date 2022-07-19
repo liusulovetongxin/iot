@@ -21,11 +21,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.dc3</groupId>-->
-<!--            <artifactId>dc3-common-profiles</artifactId>-->
-<!--            <version>2022.1.0</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.dc3</groupId>
+            <artifactId>dc3-common-profiles</artifactId>
+            <version>2022.1.0</version>
+        </dependency>
         <dependency>
             <groupId>com.dc3</groupId>
             <artifactId>dc3-common-base</artifactId>
