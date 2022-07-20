@@ -275,6 +275,33 @@ public class IotUserServiceImpl implements IotUserService {
                     return jwt;
                 });
     }
+
+    @Override
+    public Mono<String> loginByAll(String userName, String password, String tenantName) {
+        return findByUserNameAndTenantName(userName, tenantName)
+                .filter(dc3User -> bCryptPasswordEncoder.matches(password,dc3User.getPassword()))
+                .map(dc3User -> {
+                    String salt = UUID.randomUUID().toString(true);
+                    String key = "zck"+CacheConstant.Entity.TENANT+tenantName+CacheConstant.Entity.USER+userName+CacheConstant.Suffix.SALT;
+                    Instant instant = Instant.now();
+                    Instant seconds = instant.plusSeconds(2 * 60);
+                    String jwt = Jwts.builder()
+                            .setSubject(userName)
+                            .claim("tenantName", tenantName)
+                            .claim("phone", dc3User.getPhone())
+                            .claim("email", dc3User.getEmail())
+                            .claim("description", dc3User.getDescription())
+                            .setExpiration(Date.from(seconds)) // 设置过期时间
+//                            .setNotBefore(Date.from(seconds)) 设置什么时间之前不可用
+                            .setIssuedAt(Date.from(instant))// 设置什么时候开始
+                            .signWith(SignatureAlgorithm.HS256, salt.getBytes(StandardCharsets.UTF_8))
+                            .compact();
+                    cacheFeign.set(key,jwt).subscribe();
+                    cacheFeign.setExpTime(key, 2*60*1000L).subscribe();
+                    return jwt;
+                });
+    }
+
     @Override
     public Mono<Dc3User> findByUserNameAndTenantName(String username, String tenantName) {
         return r2dbcEntityTemplate.selectOne(Query.query(Criteria.where("name").is(username).and(Criteria.where("tenant_name").is(tenantName))), Dc3User.class);

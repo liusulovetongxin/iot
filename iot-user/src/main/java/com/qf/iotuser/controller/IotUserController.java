@@ -63,7 +63,7 @@ public class IotUserController {
 
     @PostMapping("/login")
     public Mono<R<Object>> login(String userName, String password, String tenantName, ServerWebExchange exchange){
-        return userService.login(userName,password,tenantName).map(jwt -> {
+        return userService.loginByAll(userName,password,tenantName).map(jwt -> {
             exchange.getResponse().getHeaders().set(ServiceConstant.Header.X_AUTH_TOKEN, jwt);
             return R.ok();}).defaultIfEmpty(R.fail("账号密码错误"));
     }

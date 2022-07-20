@@ -1,10 +1,7 @@
 package com.qf.feign;
 
 import com.dc3.common.bean.R;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import reactivefeign.spring.config.ReactiveFeignClient;
 import reactor.core.publisher.Mono;
 
@@ -26,4 +23,7 @@ public interface UserFeign {
 
     @PostMapping("/user/list")
     Mono<R> findByIdIn(@RequestBody List<String> ids);
+
+    @GetMapping("/token/check")
+    Mono<R> checkToken(@RequestParam String token);
 }

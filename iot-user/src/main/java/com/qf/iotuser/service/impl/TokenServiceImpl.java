@@ -41,7 +41,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Mono<Integer> CheckToken(String token) {
-     return    Mono.just(token)
+     return Mono.just(token)
                 .map(jwt->jwt.split("\\."))
                 .map(strings -> strings[1])
                 .map(s -> Base64.decodeBase64(s))
@@ -66,6 +66,34 @@ public class TokenServiceImpl implements TokenService {
                         e.printStackTrace();
                         return 0;
                     }
-                }).defaultIfEmpty(0);
+                })
+             .onErrorReturn(0)
+             .defaultIfEmpty(0);
+    }
+
+    @Override
+    public Mono<Integer> CheckTokenAll(String token) {
+        return Mono.just(token)
+                .map(jwt->jwt.split("\\."))
+                .map(strings -> strings[1])
+                .map(s -> Base64.decodeBase64(s))
+                .map(json-> {
+                    try {
+                        return objectMapper.readValue(json, Map.class);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .flatMap(map -> {
+                    String userName = (String) map.get("sub");
+                    String tenantName = (String) map.get("tenantName");
+                    String key = "zck"+ CacheConstant.Entity.TENANT+tenantName+CacheConstant.Entity.USER+userName+CacheConstant.Suffix.SALT;
+                    return cacheFeign.get(key).map(R::getData);
+                })
+                .map(redisToken->
+                     token.equals(redisToken) ? 1:0
+                )
+                .onErrorReturn(0)
+                .defaultIfEmpty(0);
     }
 }

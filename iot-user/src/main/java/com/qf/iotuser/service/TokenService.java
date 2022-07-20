@@ -13,4 +13,5 @@ import reactor.core.publisher.Mono;
 
 public interface TokenService {
     Mono<Integer> CheckToken(String token);
+    Mono<Integer> CheckTokenAll(String token);
 }

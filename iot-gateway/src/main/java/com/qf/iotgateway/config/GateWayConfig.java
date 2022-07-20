@@ -1,5 +1,6 @@
 package com.qf.iotgateway.config;
 
+import com.qf.iotgateway.filters.AuthorGatewayFilterFactory;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -19,27 +20,50 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class GateWayConfig  {
     @Bean
+    public AuthorGatewayFilterFactory.Config myConfig(){
+        return new AuthorGatewayFilterFactory.Config();
+    }
+
+    @Bean
     public KeyResolver keyResolver(){
         return exchange -> Mono.just(exchange.getRequest().getRemoteAddress().getHostString());
     }
+    @Bean
+    public AuthorGatewayFilterFactory authorGatewayFilterFactory() {
+        return new AuthorGatewayFilterFactory();
+    }
+
+
+
     @Bean
     public RedisRateLimiter redisRateLimiter(){
         return new RedisRateLimiter(1,1,1);
     }
     @Bean
-    public RouteLocator route(RouteLocatorBuilder builder, KeyResolver keyResolver, RedisRateLimiter redisRateLimiter){
+    public RouteLocator route(RouteLocatorBuilder builder, KeyResolver keyResolver, RedisRateLimiter redisRateLimiter,AuthorGatewayFilterFactory authorGatewayFilterFactory){
         return builder.routes()
                 .route("tokenroute", predicateSpec ->
-                        predicateSpec.path("/api/v1/user/**")
+                        predicateSpec.path("/api/v1/user/login")
                                 .filters(gatewayFilterSpec ->
                                         gatewayFilterSpec.stripPrefix(2)
                                                 .requestRateLimiter(config ->
                                                         config.setKeyResolver(keyResolver)
                                                                 .setRateLimiter(redisRateLimiter))).uri("lb://zck-iot-user")
-                ).route(predicateSpec ->
+                )
+                .route("userroute", predicateSpec ->
+                        predicateSpec.path("/api/v1/user/**")
+                                .filters(gatewayFilterSpec ->
+                                        gatewayFilterSpec.stripPrefix(2)
+                                                .filter(authorGatewayFilterFactory.apply(myConfig()))
+                                                .requestRateLimiter(config ->
+                                                        config.setKeyResolver(keyResolver)
+                                                                .setRateLimiter(redisRateLimiter))).uri("lb://zck-iot-user")
+                )
+                .route(predicateSpec ->
                         predicateSpec.path("/api/v1/tenant/**")
                                 .filters(gatewayFilterSpec ->
                                         gatewayFilterSpec.stripPrefix(2)
+                                                .filter(authorGatewayFilterFactory.apply(myConfig()))
                                                 .requestRateLimiter(config ->
                                                         config.setKeyResolver(keyResolver)
                                                                 .setRateLimiter(redisRateLimiter)

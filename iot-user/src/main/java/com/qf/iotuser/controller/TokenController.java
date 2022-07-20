@@ -1,5 +1,6 @@
 package com.qf.iotuser.controller;
 
+import com.dc3.common.bean.R;
 import com.qf.iotuser.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +27,8 @@ public class TokenController {
     }
 
     @GetMapping("/check")
-    public Mono<Integer> checkToken(String token){
-        return tokenService.CheckToken(token);
+    public Mono<R> checkToken(String token){
+        return tokenService.CheckTokenAll(token).map(integer -> R.ok(integer));
     }
 
 }

@@ -23,4 +23,6 @@ public interface CacheFeign {
 
     @GetMapping("/cache/string/get")
     Mono<R> get(@RequestParam String key);
+    @PostMapping("/cache/set/exptime")
+    Mono<R> setExpTime(@RequestParam String key,@RequestParam(required = true) Long expTime);
 }

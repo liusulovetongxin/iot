@@ -14,6 +14,7 @@
         <module>iot-user</module>
         <module>iot-api</module>
         <module>iot-gateway</module>
+        <module>iot-blackip</module>
     </modules>
 
     <parent>
