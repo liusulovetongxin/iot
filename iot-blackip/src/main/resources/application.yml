@@ -1,7 +1,9 @@
 spring:
+  cloud:
   profiles:
     active:
       - register
+      - rabbitmq
   application:
     name: zck-iot-blackip
   datasource:

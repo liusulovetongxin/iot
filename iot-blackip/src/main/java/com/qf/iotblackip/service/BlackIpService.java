@@ -18,4 +18,7 @@ public interface BlackIpService {
     void addBlackIp(Dc3BlackIp dc3BlackIp);
 
     List<BlackIpDto> findAllIp2Dto();
+    void refresh();
+
+    Long deleteId(String id);
 }

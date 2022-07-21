@@ -19,10 +19,7 @@ import reactor.core.publisher.Mono;
  */
 @Configuration
 public class GateWayConfig  {
-    @Bean
-    public AuthorGatewayFilterFactory.Config myConfig(){
-        return new AuthorGatewayFilterFactory.Config();
-    }
+
 
     @Bean
     public KeyResolver keyResolver(){
@@ -32,8 +29,6 @@ public class GateWayConfig  {
     public AuthorGatewayFilterFactory authorGatewayFilterFactory() {
         return new AuthorGatewayFilterFactory();
     }
-
-
 
     @Bean
     public RedisRateLimiter redisRateLimiter(){
@@ -54,7 +49,7 @@ public class GateWayConfig  {
                         predicateSpec.path("/api/v1/user/**")
                                 .filters(gatewayFilterSpec ->
                                         gatewayFilterSpec.stripPrefix(2)
-                                                .filter(authorGatewayFilterFactory.apply(myConfig()))
+                                                .filter(authorGatewayFilterFactory.apply(new AuthorGatewayFilterFactory.Config()))
                                                 .requestRateLimiter(config ->
                                                         config.setKeyResolver(keyResolver)
                                                                 .setRateLimiter(redisRateLimiter))).uri("lb://zck-iot-user")
@@ -63,7 +58,7 @@ public class GateWayConfig  {
                         predicateSpec.path("/api/v1/tenant/**")
                                 .filters(gatewayFilterSpec ->
                                         gatewayFilterSpec.stripPrefix(2)
-                                                .filter(authorGatewayFilterFactory.apply(myConfig()))
+
                                                 .requestRateLimiter(config ->
                                                         config.setKeyResolver(keyResolver)
                                                                 .setRateLimiter(redisRateLimiter)

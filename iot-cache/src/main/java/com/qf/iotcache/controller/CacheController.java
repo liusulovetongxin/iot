@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Administrator
@@ -120,6 +121,21 @@ public class CacheController {
     @DeleteMapping("/delete")
     public Mono<R> delete(String key){
         return cacheService.delete(key).map(result->R.ok(result));
+    }
+
+    @PostMapping("/sadd/{key}")
+    public Mono<R> sAdd(@PathVariable String key, @RequestBody Set<String> vSet){
+        return cacheService.sAdd(key, vSet.toArray(new String[]{})).map(result->R.ok(result));
+    }
+
+    @GetMapping ("/smember/{key}")
+    public Mono<R> sMember(@PathVariable String key){
+        return cacheService.getSetAll(key).map(result->R.ok(result));
+    }
+
+    @PostMapping("/keys/delete")
+    public Mono<R> deleteKeys(@RequestBody Set<String> keys){
+        return cacheService.deleteKeys(keys.toArray(new String[]{})).map(result->R.ok(result));
     }
 
 

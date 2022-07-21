@@ -1,12 +1,21 @@
 server:
   port: 14000
 spring:
+  cloud:
+    function:
+      definition: onBlackIpChange
+    stream:
+      bindings:
+        onBlackIpChange-in-0:
+          destination: zckblackipchange
+          group: group1
   main:
-#    allow-circular-references: true
+    allow-circular-references: true
     allow-bean-definition-overriding: true
   application:
     name: zck-iot-gateway
-#  profiles:
-#    active:
-#      - register
-#      - redis
+  profiles:
+    active:
+      - register
+      - redis
+      - rabbitmq

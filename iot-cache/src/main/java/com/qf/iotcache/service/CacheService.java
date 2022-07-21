@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 缓存的业务接口，定义了一些方法
@@ -177,4 +178,9 @@ public interface CacheService {
      * @return
      */
     Mono<Map> hScan(String key);
+
+    Mono<Long> sAdd(String key,String ...values);
+
+
+    Mono<Long> deleteKeys(String[] toArray);
 }

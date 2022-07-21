@@ -2,10 +2,12 @@ package com.qf.iotblackip.service.impl;
 
 import com.dc3.common.exception.AddException;
 import com.qf.iotblackip.dto.BlackIpDto;
+import com.qf.iotblackip.events.CacheRefreshEvent;
 import com.qf.iotblackip.mapper.BlackIpMapper;
 import com.qf.iotblackip.pojo.Dc3BlackIp;
 import com.qf.iotblackip.service.BlackIpService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -24,6 +26,13 @@ import java.util.List;
 @Service
 @Transactional
 public class BlackIpServiceImpl implements BlackIpService {
+    private ApplicationContext context;
+
+    @Autowired
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
+
     private BlackIpMapper blackIpMapper;
 
     @Autowired
@@ -37,10 +46,25 @@ public class BlackIpServiceImpl implements BlackIpService {
            throw new AddException("出现错误%s", "ip为空");
         });
         blackIpMapper.addBlackIp(dc3BlackIp);
+        refresh();
     }
 
     @Override
     public List<BlackIpDto> findAllIp2Dto() {
         return blackIpMapper.findAllIp2Dto();
+    }
+
+    @Override
+    public void refresh() {
+        context.publishEvent(new CacheRefreshEvent());
+    }
+
+    @Override
+    public Long deleteId(String id) {
+
+        Long aLong = blackIpMapper.deleteId(id);
+        refresh();
+        return aLong;
+
     }
 }

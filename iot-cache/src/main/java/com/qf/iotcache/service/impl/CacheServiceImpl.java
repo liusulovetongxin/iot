@@ -158,4 +158,14 @@ public class CacheServiceImpl implements CacheService {
         return scan.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    @Override
+    public Mono<Long> sAdd(String key, String... values) {
+        return redisTemplate.opsForSet().add(key,values);
+    }
+
+    @Override
+    public Mono<Long> deleteKeys(String[] toArray) {
+        return redisTemplate.delete(toArray);
+    }
+
 }
