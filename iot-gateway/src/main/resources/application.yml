@@ -3,12 +3,15 @@ server:
 spring:
   cloud:
     function:
-      definition: onBlackIpChange
+      definition: onBlackIpChange;onForbiddenPathChange
     stream:
       bindings:
         onBlackIpChange-in-0:
           destination: zckblackipchange
           group: group1
+        onForbiddenPathChange-in-0:
+          destination: zckforbiddenpathchange
+          group: group2
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true

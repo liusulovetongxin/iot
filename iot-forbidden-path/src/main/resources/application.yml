@@ -1,0 +1,17 @@
+server:
+  port: 16000
+spring:
+  profiles:
+    active:
+      - register
+      - rabbitmq
+  application:
+    name: zck-iot-forbidden-path
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql:///dc3?useUnicode=false&characterEncoding=utf8&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
