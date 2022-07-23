@@ -1,6 +1,5 @@
 package com.qf.iotgateway.cache;
 
-import com.dc3.common.constant.CacheConstant;
 import com.qf.feign.CacheFeign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -46,11 +45,18 @@ public class BlackIpCache {
             }
         }
     }
+//    private void initData(){
+//        cacheFeign.sMember("zck"+CacheConstant.Entity.BLACK_IP).subscribe(r->blackIpSet = (Collection) r.getData());
+//    }
     private void initData(){
-        cacheFeign.sMember("zck"+CacheConstant.Entity.BLACK_IP).subscribe(r->blackIpSet = (Collection) r.getData());
+        cacheFeign.sMember("zck_iot_blackip_webflux").subscribe(r->blackIpSet = (Collection) r.getData());
     }
     @Bean
     public Consumer<String> onBlackIpChange(){
+        return msg->initData();
+    }
+    @Bean
+    public Consumer<String> onBlackIpWebFluxChange(){
         return msg->initData();
     }
 }

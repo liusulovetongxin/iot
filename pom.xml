@@ -17,6 +17,7 @@
         <module>iot-blackip</module>
         <module>iot-api-block</module>
         <module>iot-forbidden-path</module>
+        <module>iot-blackip-webflux</module>
     </modules>
 
     <parent>

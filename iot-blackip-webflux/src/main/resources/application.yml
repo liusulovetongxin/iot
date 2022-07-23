@@ -1,0 +1,13 @@
+server:
+  port: 16001
+spring:
+  application:
+    name: zck-iot-blackip-webflux
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/dc3?SSL=false&sslMode=DISABLED
+    username: root
+    password: root
+  profiles:
+    active:
+      - register
+      - rabbitmq

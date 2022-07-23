@@ -1,9 +1,9 @@
 server:
-  port: 14000
+  port: 14001
 spring:
   cloud:
     function:
-      definition: onBlackIpChange;onForbiddenPathChange
+      definition: onBlackIpChange;onForbiddenPathChange;onBlackIpWebFluxChange;onForbiddenPathWebFluxChange
     stream:
       bindings:
         onBlackIpChange-in-0:
@@ -12,6 +12,9 @@ spring:
         onForbiddenPathChange-in-0:
           destination: zckforbiddenpathchange
           group: group2
+        onBlackIpWebFluxChange-in-0:
+          destination: zckblackipwebfluxchange
+          group: group3
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true

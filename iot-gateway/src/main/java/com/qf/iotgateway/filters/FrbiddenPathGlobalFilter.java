@@ -5,6 +5,7 @@ import com.qf.iotgateway.cache.ForbiddenPathCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -22,7 +23,7 @@ import java.nio.charset.StandardCharsets;
  */
 
 @Component
-public class FrbiddenPathGlobalFilter implements GlobalFilter {
+public class FrbiddenPathGlobalFilter implements GlobalFilter, Ordered {
     private ForbiddenPathCache forbiddenPathCache;
 
     @Autowired
@@ -60,5 +61,10 @@ public class FrbiddenPathGlobalFilter implements GlobalFilter {
                 )
                 .flatMap(result->result);
 
+    }
+
+    @Override
+    public int getOrder() {
+        return 1;
     }
 }
