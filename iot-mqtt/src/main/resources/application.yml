@@ -1,0 +1,45 @@
+
+
+
+driver:
+  tenant: 哎
+  name: MqttDriver
+  type: driver
+  project: @project.artifactId@
+  description: @project.description@
+  schedule:
+    status:
+      enable: true
+      corn: '0/10 * * * * ?'
+    read:
+      enable: false
+      corn: '0/30 * * * * ?'
+    custom:
+      enable: true
+      corn:  '0/5 * * * * ?'
+  point-attribute:
+    - displayName: 指令Topic
+      name: commandTopic
+      type: string
+      value: commandTopic
+      description: 测点/设备接收下行指令的Mqtt主题
+      option:
+        type: input\select\checkox\switch\time...
+        required: true
+        data-type: static/url
+        data: jsonString
+    - displayName: 指令Qos
+      name: commandQos
+      type: int
+      value: 2
+      description: 测点/设备接收下行指令的Mqtt主题的Qos
+      option:
+        type: input\select\checkox\switch\time...
+        required: true
+        data-type: static/url
+        data: jsonString
+spring:
+  application:
+    name: iot-mqtt
+server:
+  port: 36985

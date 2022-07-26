@@ -18,6 +18,8 @@
         <module>iot-api-block</module>
         <module>iot-forbidden-path</module>
         <module>iot-blackip-webflux</module>
+        <module>iot-sdk</module>
+        <module>iot-mqtt</module>
     </modules>
 
     <parent>
